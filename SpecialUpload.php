@@ -116,12 +116,13 @@ class SpecialUpload extends \SpecialPage {
 		$html = '<p></p>';
 		$html .= \Html::hidden('avatar', '');
 
-		$html .= \Xml::element('button', array('id' => 'pickfile'), $this->msg('uploadavatar-selectfile'));
+		// 注意：我们保留原始表单结构，但它会被Vue组件隐藏
+		$html .= \Xml::element('button', array('id' => 'pickfile', 'style' => 'display:none'), $this->msg('uploadavatar-selectfile')->text());
 
 		$html .= ' ';
 
 		// Submit button
-		$html .= \Xml::submitButton($this->msg('uploadavatar-submit')->text());
+		$html .= \Xml::submitButton($this->msg('uploadavatar-submit')->text(), ['style' => 'display:none']);
 
 		// Wrap with a form
 		$html = \Xml::tags('form', array('action' => $this->getPageTitle()->getLinkURL(), 'method' => 'post'), $html);

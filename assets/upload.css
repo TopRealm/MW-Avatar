@@ -1,10 +1,17 @@
+.cdx-avatar-uploader {
+	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+	max-width: 600px;
+	margin: 1em 0;
+}
+
 .cropper-container {
 	overflow: hidden;
-	font-size: 0px;
 	position: relative;
 	height: 400px;
-	width: 400px;
-	border: solid 1px black;
+	max-width: 100%;
+	border: solid 1px #a2a9b1;
+	border-radius: 2px;
+	margin-bottom: 1em;
 }
 
 .cropper-container[disabled] {
@@ -12,8 +19,14 @@
 	position: absolute;
 }
 
+.avatar-current-container {
+	text-align: center;
+	margin-bottom: 1em;
+}
+
 .current-avatar {
 	max-height: 256px;
+	border-radius: 2px;
 }
 
 .cropper {
@@ -30,30 +43,30 @@
 
 .tl-resizer, .tr-resizer, .bl-resizer, .br-resizer {
 	position: absolute;
-	height: 6px;
-	width: 6px;
+	height: 8px;
+	width: 8px;
 	background: white;
-	border: 1px solid black;
+	border: 1px solid #202122;
 }
 
 .tl-resizer {
-	left: -3px;
-	top: -3px;
+	left: -4px;
+	top: -4px;
 	cursor: nwse-resize;
 }
 .tr-resizer {
-	right: -3px;
-	top: -3px;
+	right: -4px;
+	top: -4px;
 	cursor: nesw-resize;
 }
 .bl-resizer {
-	left: -3px;
-	bottom: -3px;
+	left: -4px;
+	bottom: -4px;
 	cursor: nesw-resize;
 }
 .br-resizer {
-	right: -3px;
-	bottom: -3px;
+	right: -4px;
+	bottom: -4px;
 	cursor: nwse-resize;
 }
 .round-preview {
@@ -66,4 +79,15 @@
 	border-radius: 50%;
 	box-sizing: border-box;
 	z-index: -1;
+}
+
+.avatar-actions {
+	display: flex;
+	gap: 1em;
+	margin-top: 1em;
+}
+
+.error-message {
+	color: #d33;
+	margin: 1em 0;
 }

@@ -25,10 +25,17 @@
 	"ResourceModules": {
 		"ext.avatar.upload": {
 			"dependencies": [
-				"mediawiki.user"
+				"mediawiki.user",
+				"oojs-ui-core",
+				"codex",
+				"codex-search",
+				"codex-button",
+				"codex-icons",
+				"vue"
 			],
 			"scripts":[
-				"assets/upload.js"
+				"assets/upload.js",
+				"assets/vue/AvatarUploader.js"
 			],
 			"styles":[
 				"assets/upload.css"
