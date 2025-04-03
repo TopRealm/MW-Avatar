@@ -2,6 +2,11 @@
 namespace Avatar;
 
 use MediaWiki\MediaWikiServices;
+use OOUI\ButtonWidget;
+use OOUI\ButtonInputWidget;
+use OOUI\Theme;
+use OOUI\WikimediaUITheme;
+use OOUI\Element;
 
 class SpecialUpload extends \SpecialPage {
 
@@ -11,6 +16,9 @@ class SpecialUpload extends \SpecialPage {
 
 	public function execute($par) {
 		$this->requireLogin('prefsnologintext2');
+
+		Theme::setSingleton(new WikimediaUITheme);
+		Element::setDefaultDir('rtl');
 
 		$this->setHeaders();
 		$this->outputHeader();
@@ -116,12 +124,21 @@ class SpecialUpload extends \SpecialPage {
 		$html = '<p></p>';
 		$html .= \Html::hidden('avatar', '');
 
-		$html .= \Xml::element('button', array('id' => 'pickfile'), $this->msg('uploadavatar-selectfile'));
-
-		$html .= ' ';
+		$html .= new ButtonWidget([
+			'label' => $this->msg('uploadavatar-selectfile')->text(),
+			'id' => 'pickfile',
+			'flags' => [
+				'primary',
+				'progressive'
+			]
+		]);
 
 		// Submit button
-		$html .= \Xml::submitButton($this->msg('uploadavatar-submit')->text());
+		$html .= new ButtonInputWidget([
+			'label' => $this->msg('uploadavatar-submit')->text(),
+			'type' => 'submit',
+			'useInputTag' => true,
+		]);
 
 		// Wrap with a form
 		$html = \Xml::tags('form', array('action' => $this->getPageTitle()->getLinkURL(), 'method' => 'post'), $html);
