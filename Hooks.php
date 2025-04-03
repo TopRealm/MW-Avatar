@@ -10,7 +10,7 @@ class Hooks {
 			->makeLink(
 				\SpecialPage::getTitleFor("UploadAvatar"), 
 				wfMessage('uploadavatar')->text(),
-				['class' => 'mw-ui-button mw-ui-button-element mw-ui-quiet']
+				['class' => 'oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement']
 			);
 
 		$preferences['editavatar'] = array(
