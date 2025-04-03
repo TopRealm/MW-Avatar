@@ -2,26 +2,29 @@
 namespace Avatar;
 
 use MediaWiki\MediaWikiServices;
+use OOUI\ButtonWidget;
 
 class Hooks {
 
 	public static function onGetPreferences(\User $user, &$preferences) {
-		 // 添加OOUI支持
+		// 添加OOUI支持
 		\RequestContext::getMain()->getOutput()->enableOOUI();
-		\RequestContext::getMain()->getOutput()->addModules(['oojs-ui-core', 'oojs-ui-widgets']);
 		
-		$link = MediaWikiServices::getInstance()->getLinkRenderer()
-			->makeLink(
-				\SpecialPage::getTitleFor("UploadAvatar"), 
-				wfMessage('uploadavatar')->text(),
-				['class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement']
-			);
+		// 创建OOUI按钮组件
+		$button = new ButtonWidget([
+			'label' => wfMessage('uploadavatar')->text(),
+			'href' => \SpecialPage::getTitleFor('UploadAvatar')->getLocalURL(),
+			'framed' => true,
+		]);
+		
+		// 按钮HTML输出
+		$buttonHtml = $button->toString();
 
 		$preferences['editavatar'] = array(
 			'type' => 'info',
 			'raw' => true,
 			'label-message' => 'prefs-editavatar',
-			'default' => '<img src="' . Avatars::getLinkFor($user->getName()) . '" width="32"></img> ' . $link,
+			'default' => '<img src="' . Avatars::getLinkFor($user->getName()) . '" width="32" style="vertical-align: middle; margin-right: 8px;"></img> ' . $buttonHtml,
 			'section' => 'personal/info',
 		);
 

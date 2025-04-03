@@ -118,27 +118,52 @@ class SpecialUpload extends \SpecialPage {
 
 	public function displayForm() {
 		$html = '<p></p>';
-		$html .= \Html::hidden('avatar', '');
-
-		// 使用HTML按钮但添加OOUI类，保持原有ID以确保JavaScript兼容性
-		$html .= \Xml::element('button', array(
+		
+		// 创建表单面板
+		$formPanel = new \OOUI\PanelLayout([
+			'padded' => true,
+			'framed' => false
+		]);
+		
+		// 创建表单布局
+		$formLayout = new \OOUI\FormLayout([
+			'method' => 'post',
+			'action' => $this->getPageTitle()->getLinkURL()
+		]);
+		
+		// 创建字段集
+		$fieldset = new \OOUI\FieldsetLayout();
+		
+		// 创建隐藏字段
+		$hiddenField = new \OOUI\HiddenInputWidget([
+			'name' => 'avatar'
+		]);
+		
+		// 创建按钮组
+		$buttonGroup = new \OOUI\HorizontalLayout();
+		
+		// 文件选择按钮 (注意：需要保留id="pickfile"以便JavaScript能找到它)
+		$pickfileButton = new \OOUI\ButtonWidget([
 			'id' => 'pickfile',
-			'class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement'
-		), $this->msg('uploadavatar-selectfile')->text());
-
-		$html .= ' ';
-
-		// 提交按钮也使用HTML但添加OOUI类
-		$html .= \Xml::submitButton(
-			$this->msg('uploadavatar-submit')->text(),
-			array('class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-flaggedElement-progressive oo-ui-labelElement')
-		);
-
-		// Wrap with a form
-		$html = \Xml::tags('form', array('action' => $this->getPageTitle()->getLinkURL(), 'method' => 'post'), $html);
-
+			'label' => $this->msg('uploadavatar-selectfile')->text(),
+			'framed' => true
+		]);
+		
+		// 提交按钮
+		$submitButton = new \OOUI\ButtonInputWidget([
+			'type' => 'submit',
+			'label' => $this->msg('uploadavatar-submit')->text(),
+			'flags' => ['primary', 'progressive']
+		]);
+		
+		// 组装界面
+		$buttonGroup->addItems([$pickfileButton, new \OOUI\SpacerWidget(['classes' => ['spacer']]), $submitButton]);
+		$fieldset->addItems([$hiddenField, $buttonGroup]);
+		$formLayout->addItems([$fieldset]);
+		$formPanel->appendContent($formLayout);
+		
 		$this->getOutput()->addWikiMsg('uploadavatar-notice');
-		$this->getOutput()->addHTML($html);
+		$this->getOutput()->addHTML($formPanel);
 	}
 
 	public function isListed() {
