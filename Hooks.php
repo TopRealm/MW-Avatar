@@ -6,11 +6,15 @@ use MediaWiki\MediaWikiServices;
 class Hooks {
 
 	public static function onGetPreferences(\User $user, &$preferences) {
+		 // 添加OOUI支持
+		\RequestContext::getMain()->getOutput()->enableOOUI();
+		\RequestContext::getMain()->getOutput()->addModules(['oojs-ui-core', 'oojs-ui-widgets']);
+		
 		$link = MediaWikiServices::getInstance()->getLinkRenderer()
 			->makeLink(
 				\SpecialPage::getTitleFor("UploadAvatar"), 
 				wfMessage('uploadavatar')->text(),
-				['class' => 'oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement']
+				['class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement']
 			);
 
 		$preferences['editavatar'] = array(

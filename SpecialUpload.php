@@ -27,6 +27,10 @@ class SpecialUpload extends \SpecialPage {
 		global $wgMaxAvatarResolution;
 		$this->getOutput()->addJsConfigVars('wgMaxAvatarResolution', $wgMaxAvatarResolution);
 		$this->getOutput()->addModules('ext.avatar.upload');
+		
+		// 加载OOUI模块以确保OOUI样式生效
+		$this->getOutput()->addModules(['oojs-ui-core', 'oojs-ui-widgets']);
+		$this->getOutput()->enableOOUI(); // 启用OOUI支持
 
 		if ($request->wasPosted()) {
 			if ($this->processUpload()) {
@@ -116,18 +120,18 @@ class SpecialUpload extends \SpecialPage {
 		$html = '<p></p>';
 		$html .= \Html::hidden('avatar', '');
 
-		// 选择文件按钮 - 修改为OOUI的白色按钮样式
+		// 使用HTML按钮但添加OOUI类，保持原有ID以确保JavaScript兼容性
 		$html .= \Xml::element('button', array(
 			'id' => 'pickfile',
-			'class' => 'oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement'
-		), $this->msg('uploadavatar-selectfile'));
+			'class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement'
+		), $this->msg('uploadavatar-selectfile')->text());
 
 		$html .= ' ';
 
-		// 上传头像按钮 - 修改为OOUI的蓝色按钮样式
+		// 提交按钮也使用HTML但添加OOUI类
 		$html .= \Xml::submitButton(
 			$this->msg('uploadavatar-submit')->text(),
-			array('class' => 'oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-flaggedElement-progressive oo-ui-labelElement')
+			array('class' => 'oo-ui-button oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-flaggedElement-progressive oo-ui-labelElement')
 		);
 
 		// Wrap with a form
