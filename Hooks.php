@@ -7,7 +7,11 @@ class Hooks {
 
 	public static function onGetPreferences(\User $user, &$preferences) {
 		$link = MediaWikiServices::getInstance()->getLinkRenderer()
-			->makeLink(\SpecialPage::getTitleFor("UploadAvatar"), wfMessage('uploadavatar')->text());
+			->makeLink(
+				\SpecialPage::getTitleFor("UploadAvatar"), 
+				wfMessage('uploadavatar')->text(),
+				['class' => 'mw-ui-button mw-ui-button-element mw-ui-quiet']
+			);
 
 		$preferences['editavatar'] = array(
 			'type' => 'info',

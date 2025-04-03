@@ -116,12 +116,19 @@ class SpecialUpload extends \SpecialPage {
 		$html = '<p></p>';
 		$html .= \Html::hidden('avatar', '');
 
-		$html .= \Xml::element('button', array('id' => 'pickfile'), $this->msg('uploadavatar-selectfile'));
+		// 选择文件按钮 - 添加白色按钮样式
+		$html .= \Xml::element('button', array(
+			'id' => 'pickfile',
+			'class' => 'mw-ui-button mw-ui-button-element mw-ui-quiet'
+		), $this->msg('uploadavatar-selectfile'));
 
 		$html .= ' ';
 
-		// Submit button
-		$html .= \Xml::submitButton($this->msg('uploadavatar-submit')->text());
+		// 上传头像按钮 - 添加蓝色按钮样式
+		$html .= \Xml::submitButton(
+			$this->msg('uploadavatar-submit')->text(),
+			array('class' => 'mw-ui-button mw-ui-button-element mw-ui-progressive')
+		);
 
 		// Wrap with a form
 		$html = \Xml::tags('form', array('action' => $this->getPageTitle()->getLinkURL(), 'method' => 'post'), $html);
