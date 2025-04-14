@@ -135,7 +135,6 @@ class SpecialUpload extends \SpecialPage {
 	}
 
 	public function displayForm() {
-
 		$inputAvatar = Html::hidden('avatar', '', ['id' => 'avatar']);
 		$customWidget = new OOUI\Widget([
 			'content' => [
@@ -182,7 +181,6 @@ class SpecialUpload extends \SpecialPage {
 		]);
 		$this->getOutput()->addWikiMsg('uploadavatar-notice');
 		$this->getOutput()->addHTML($as);
-
 	}
 
 	public function isListed() {
