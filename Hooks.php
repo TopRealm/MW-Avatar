@@ -1,30 +1,21 @@
 <?php
 namespace Avatar;
 
-use MediaWiki\MediaWikiServices;
-use OOUI\ButtonWidget;
+use OOUI;
 
 class Hooks {
 
 	public static function onGetPreferences(\User $user, &$preferences) {
-		// 添加OOUI支持
-		\RequestContext::getMain()->getOutput()->enableOOUI();
-		
-		// 创建OOUI按钮组件
-		$button = new ButtonWidget([
+		$link = new OOUI\ButtonWidget([
 			'label' => wfMessage('uploadavatar')->text(),
-			'href' => \SpecialPage::getTitleFor('UploadAvatar')->getLocalURL(),
-			'framed' => true,
+			'href' => \SpecialPage::getTitleFor("UploadAvatar")->getLinkURL(),
 		]);
-		
-		// 按钮HTML输出
-		$buttonHtml = $button->toString();
 
 		$preferences['editavatar'] = array(
 			'type' => 'info',
 			'raw' => true,
 			'label-message' => 'prefs-editavatar',
-			'default' => '<img src="' . Avatars::getLinkFor($user->getName()) . '" width="32" style="vertical-align: middle; margin-right: 8px;"></img> ' . $buttonHtml,
+			'default' => '<img src="' . Avatars::getLinkFor($user->getName()) . '" width="32" style="vertical-align: middle; margin-right: 8px;"></img> ' . $link,
 			'section' => 'personal/info',
 		);
 

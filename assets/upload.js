@@ -1,305 +1,312 @@
 // Some fields
-var maxVisualHeight = 400;
-var minDimension = 64;
-var multiplier = 1;
-var minVisualDim;
+const CropBox = require("ext.avatar.canvas");
 
-var dragMode = 0;
+const minDimension = 64;
+const maxRes = mw.config.get('wgMaxAvatarResolution');
+const FileType = ['image/png', 'image/gif', 'image/jpeg', 'image/webp', 'image/svg+xml']
+const inputAcceptFlieType = '.png, .gif, .jpg, .jpeg, .webp, .svg'
+const currentAvatar = document.createElement('img')
+currentAvatar.className = 'current-avatar';
+currentAvatar.src = mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + mw.user.id() + '&res=original&nocache&ver=' + Math.floor(Date.now()/1000).toString(16);
+console.log('as:', mw.msg('uploadavatar-nofile'))
+console.log('as:', mw.msg('uploadavatar-hint'))
+console.log('as:', mw.msg('avatar-toosmall'))
+console.log('as:', mw.msg('avatar-invalid'))
 
-var visualHeight;
-var visualWidth;
+let msgBelow = document.createElement('p');
+msgBelow.textContent = mw.msg('uploadavatar-nofile');
+const OOSubmit = OO.ui.infuse(document.getElementById('submit'));
+const OOerrorMsg = OO.ui.infuse(document.getElementById('errorMsg'));
+OOerrorMsg.getLabel() ? OOerrorMsg.toggle(true) : OOerrorMsg.toggle(false);
+const hiddenField = document.getElementById('avatar');
+const pickfile = document.getElementById('pickfile');
+const crop = document.getElementById('crop')
+crop.innerHTML = `
+  <canvas id="avatar-canvas"></canvas>
+  <div id="cropper" class="cropper" name="cropper" >
+    <div class="up"></div>
+    <div class="down"></div>
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="tl-resizer"></div>
+    <div class="tr-resizer"></div>
+    <div class="bl-resizer"></div>
+    <div class="br-resizer"></div>
+    <div class="x"></div>
+    <div class="y"></div>
+  </div>
+`
+const canvas = document.getElementById('avatar-canvas');
+const cropper = document.querySelector('.cropper');
+const tlResizer = document.querySelector('.tl-resizer');
+const trResizer = document.querySelector('.tr-resizer');
+const blResizer = document.querySelector('.bl-resizer');
+const brResizer = document.querySelector('.br-resizer');
+const up = document.querySelector('.up');
+const down = document.querySelector('.down');
+const left = document.querySelector('.left');
+const right = document.querySelector('.right');
 
-var maxRes = mw.config.get('wgMaxAvatarResolution');
+const CorpBoxClass = new CropBox(canvas, maxRes);
 
-var startOffset;
-var startX;
-var startY;
+let ifKeyDown = false;
+let contact = "";
+let cropperWidth = cropper.offsetWidth, canvasWidth = 0, canvasHeight = 0;
+let startX, startY;
+let offsetX = 0, offsetY = 0;
+let translateX = offsetX, translateY = offsetY;
 
-// Objects
-var submitButton = $('[type=submit]');
-var currentAvatar = $('<div>').append($('<img class="current-avatar">').attr('src', mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + mw.user.id() + '&res=original&nocache&ver=' + Math.floor(Date.now()/1000).toString(16)));
-var container = $('<div class="cropper-container" disabled=""/>');
-var imageObj = $('<img src=""></img>');
-var selector = $('<div class="cropper"><div class="tl-resizer"></div><div class="tr-resizer"></div><div class="bl-resizer"></div><div class="br-resizer"></div><div class="round-preview"></div></div>');
-var msgBelow = $('<p>').text(mw.msg('uploadavatar-nofile'));
-var hiddenField = $('[name=avatar]');
-var pickfile = $('#pickfile');
-var errorMsg = $('#errorMsg');
-var roundPreview = selector.find('.round-preview');
+let cropdDom = false;
 
-// Helper function to limit the selection clip
-function normalizeBound(inner, outer) {
-  if (inner.left < outer.left) {
-    inner.left = outer.left;
-  }
-  if (inner.left + inner.width > outer.left + outer.width) {
-    inner.left = outer.left + outer.width - inner.width;
-  }
-  if (inner.top < outer.top) {
-    inner.top = outer.top;
-  }
-  if (inner.top + inner.height > outer.top + outer.height) {
-    inner.top = outer.top + outer.height - inner.height;
-  }
+const init = (event) => {
+  const e = event || window.event;
+  e.stopPropagation();
+  e.preventDefault();
+  startX = e.clientX;
+  startY = e.clientY;
+  cropperWidth = cropper.offsetWidth;
+  canvasWidth = canvas.offsetWidth;
+  canvasHeight = canvas.offsetHeight;
+  ifKeyDown = true;
+  cropdDom = true;
 }
 
-function normalizeRange(pt, min, max) {
-  if (pt < min) {
-    return min;
-  } else if (pt > max) {
-    return max;
-  } else {
-    return pt;
-  }
+cropper.onpointerdown = (event) => {
+  init(event);
+  contact = "cropper";
+}
+tlResizer.onpointerdown = (event) => {
+  init(event);
+  contact = "tlResizer";
+}
+trResizer.onpointerdown = (event) => {
+  init(event);
+  contact = "trResizer";
+}
+blResizer.onpointerdown = (event) => {
+  init(event);
+  contact = "blResizer";
+}
+brResizer.onpointerdown = (event) => {
+  init(event);
+  contact = "brResizer";
+}
+up.onpointerdown = (event) => {
+  init(event);
+  contact = "up";
+}
+down.onpointerdown = (event) => {
+  init(event);
+  contact = "down";
+}
+left.onpointerdown = (event) => {
+  init(event);
+  contact = "left";
+}
+right.onpointerdown = (event) => {
+  init(event);
+  contact = "right";
 }
 
-// Helper function to easily get bound
-function getBound(obj) {
-  var bound = obj.offset();
-  bound.width = obj.width();
-  bound.height = obj.height();
-  return bound;
-}
-
-function setBound(obj, bound) {
-  obj.offset(bound);
-  obj.width(bound.width);
-  obj.height(bound.height);
-}
-
-function cropImage(image, x, y, dim, targetDim) {
-  if (dim > 2 * targetDim) {
-    var crop = cropImage(image, x, y, dim, 2 * targetDim);
-    return cropImage(crop, 0, 0, 2 * targetDim, targetDim);
-  } else {
-    var buffer = $('<canvas/>')
-      .attr('width', targetDim)
-      .attr('height', targetDim)[0];
-    buffer
-      .getContext('2d')
-      .drawImage(image, x, y, dim, dim, 0, 0, targetDim, targetDim);
-    return buffer;
-  }
-}
-
-// Event listeners
-function updateHidden() {
-  var bound = getBound(selector);
-  var outer = getBound(container);
-  // When window is zoomed,
-  // width set != width get, so we do some nasty trick here to counter the effect
-  var dim = Math.round((bound.width - container.width() + visualWidth) * multiplier);
-  var res = dim;
-  if (res > maxRes) {
-    res = maxRes;
-  }
-  var image = cropImage(imageObj[0],
-    (bound.left - outer.left) * multiplier,
-    (bound.top - outer.top) * multiplier,
-    dim, res);
-  hiddenField.val(image.toDataURL());
-
-  // We have an image here, so we can easily calcaulte the reverse color
-  var data = image.getContext('2d').getImageData(0, 0, res, res).data;
-  var r = 0, g = 0, b = 0, c = 0;
-  for (var i = 0; i < data.length; i += 4) {
-    c++;
-    r += data[i];
-    g += data[i + 1];
-    b += data[i + 2];
-  }
-
-  roundPreview.css('border-color', 'rgb(' + (256 - Math.round(r / c)) + ', ' + (256 - Math.round(g / c)) + ',' + (256 - Math.round(b / c)) + ')');
-}
-
-function onDragStart(event) {
-  startOffset = getBound(selector);
-  startX = event.pageX;
-  startY = event.pageY;
-  event.preventDefault();
-  event.stopPropagation();
-
-  $('body').on('mousemove', onDrag).on('mouseup', onDragEnd);
-}
-
-function onDrag(event) {
-  var bound = getBound(selector);
-  var outer = getBound(container);
-  var point = {
-    left: event.pageX,
-    top: event.pageY,
-    width: 0,
-    height: 0
-  };
-  normalizeBound(point, outer);
-  var deltaX = point.left - startX;
-  var deltaY = point.top - startY;
-
-  // All min, max below uses X direction as positive
-  switch(dragMode) {
-    case 0:
-      bound.left = startOffset.left + deltaX;
-      bound.top = startOffset.top + deltaY;
-      normalizeBound(bound, outer);
+window.onpointermove = (event) => {
+  switch (contact) {
+    case "cropper":
+      cropperMove(event);
       break;
-    case 1:
-      var min = -Math.min(startOffset.left - outer.left, startOffset.top - outer.top);
-      var max = startOffset.width - minDimension;
-      deltaX = deltaY = normalizeRange(Math.min(deltaX, deltaY), min, max);
-      bound.width = startOffset.width - deltaX;
-      bound.left = startOffset.left + startOffset.width - bound.width;
-      bound.height = startOffset.height - deltaY;
-      bound.top = startOffset.top + startOffset.height - bound.height;
+    case "tlResizer":
+      tlResizerMove(event);
       break;
-    case 2:
-      var min = minDimension - startOffset.width;
-      var max = Math.min(
-        outer.left + outer.width - startOffset.left - startOffset.width,
-        startOffset.top - outer.top
-      );
-      deltaY = -(deltaX = normalizeRange(Math.max(deltaX, -deltaY), min, max));
-      bound.width = startOffset.width + deltaX;
-      bound.height = startOffset.height - deltaY;
-      bound.top = startOffset.top + startOffset.height - bound.height;
+    case "trResizer":
+      trResizerMove(event);
       break;
-    case 3:
-      var min = -Math.min(
-        startOffset.left - outer.left,
-        outer.top + outer.height - startOffset.top - startOffset.height
-      );
-      var max = startOffset.width - minDimension;
-      deltaY = -(deltaX = normalizeRange(Math.min(deltaX, -deltaY), min, max));
-      bound.width = startOffset.width - deltaX;
-      bound.left = startOffset.left + startOffset.width - bound.width;
-      bound.height = startOffset.height + deltaY;
+    case "blResizer":
+      blResizerMove(event);
       break;
-    case 4:
-      var min = minDimension - startOffset.width;
-      var max = Math.min(
-        outer.left + outer.width - startOffset.left - startOffset.width,
-        outer.top + outer.height - startOffset.top - startOffset.height
-      );
-      deltaX = deltaY = normalizeRange(Math.max(deltaX, deltaY), min, max);
-      bound.width = startOffset.width + deltaX;
-      bound.height = startOffset.height + deltaY;
+    case "brResizer":
+      brResizerMove(event);
+      break;
+    case "up":
+      upMove(event);
+      break;
+    case "down":
+      downMove(event);
+      break;
+    case "left":
+      leftMove(event);
+      break;
+    case "right":
+      rightMove(event);
       break;
   }
-
-  setBound(selector, bound);
-  event.preventDefault();
+}
+window.onpointerup = () => {
+  console.log(cropdDom);
+  if (!cropdDom) return;
+  offsetX = translateX;
+  offsetY = translateY;
+  startX = 0;
+  startY = 0;
+  ifKeyDown = false;
+  contact = "";
+  const inputValue = CorpBoxClass.clip(offsetX, offsetY, cropperWidth, cropperWidth);
+  hiddenField.setAttribute('value', inputValue);
 }
 
-function onDragEnd(event) {
-  $('body').off('mousemove', onDrag).off('mouseup', onDragEnd);
-  event.preventDefault();
-
-  updateHidden();
+const cropperCSSsetup = (valve, tX, tY) => {
+  cropper.style.width = `${valve}px`;
+  cropper.style.height = `${valve}px`;
+  translateX = tX;
+  translateY = tY;
+  cropper.style.transform = `translate(${translateX}px, ${translateY}px)`;
 }
 
-function onImageLoaded() {
-  var width = imageObj.width();
-  var height = imageObj.height();
-
-  if (width < minDimension || height < minDimension) {
-    errorMsg.text(mw.msg('avatar-toosmall'));
-    imageObj.attr('src', '');
-    container.attr('disabled', '');
-    currentAvatar.show();
-    msgBelow.text(mw.msg('uploadavatar-nofile'));
-    submitButton.attr('disabled', '');
-    return;
-  }
-
-  errorMsg.text('');
-
-  container.removeAttr('disabled');
-  submitButton.removeAttr('disabled');
-  currentAvatar.hide();
-  msgBelow.text(mw.msg('uploadavatar-hint'));
-  visualHeight = height;
-  visualWidth = width;
-
-  if (visualHeight > maxVisualHeight) {
-    visualHeight = maxVisualHeight;
-    visualWidth = visualHeight * width / height;
-  }
-
-  multiplier = width / visualWidth;
-  minVisualDim = minDimension / multiplier;
-
-  container.width(visualWidth);
-  container.height(visualHeight);
-  imageObj.width(visualWidth);
-  imageObj.height(visualHeight);
-
-  var bound = getBound(container);
-  bound.width = bound.height = Math.min(bound.width, bound.height);
-  setBound(selector, bound);
-  updateHidden();
+function cropperMove(event) {
+  const e = event || window.event;
+  const newOffsetX = offsetX + e.clientX - startX;
+  const newOffsetY = offsetY + e.clientY - startY;
+  // 边界检查
+  translateX = Math.max(0, Math.min(newOffsetX, canvas.offsetWidth - cropper.offsetWidth));
+  translateY = Math.max(0, Math.min(newOffsetY, canvas.offsetHeight - cropper.offsetHeight));
+  cropper.style.transform = `translate(${translateX}px, ${translateY}px)`;
 }
 
-function onImageLoadingFailed() {
-  if(!imageObj.attr('src')) {
-    return;
-  }
-
-  errorMsg.text(mw.msg('avatar-invalid'));
-  imageObj.attr('src', '');
-  container.attr('disabled', '');
-  submitButton.attr('disabled', '');
-  currentAvatar.show();
-  msgBelow.text(mw.msg('uploadavatar-nofile'));
-  return;
+function tlResizerMove(event) {
+  const e = event || window.event;
+  max = Math.max(e.clientX - startX, e.clientY - startY);
+  if (
+    offsetX + max < 0 ||
+    offsetY + max < 0 ||
+    cropperWidth - max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth - max, offsetX + max, offsetY + max);
+}
+function trResizerMove(event) {
+  const e = event || window.event;
+  max = Math.min(e.clientX - startX, - (e.clientY - startY));
+  if (
+    offsetX + cropperWidth + max > canvasWidth ||
+    offsetY - max < 0 ||
+    cropperWidth + max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth + max, offsetX, offsetY - max);
+}
+function blResizerMove(event) {
+  const e = event || window.event;
+  max = Math.max(e.clientX - startX, - (e.clientY - startY));
+  if (
+    offsetX + max < 0 ||
+    offsetY + cropperWidth + max > canvasHeight ||
+    cropperWidth - max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth - max, offsetX + max, offsetY);
+}
+function brResizerMove(event) {
+  const e = event || window.event;
+  max = Math.max(e.clientX - startX, e.clientY - startY);
+  if (
+    offsetX + cropperWidth + max > canvasWidth ||
+    offsetY + cropperWidth + max > canvasHeight ||
+    cropperWidth + max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth + max, offsetX, offsetY);
+}
+function upMove(event) {
+  const e = event || window.event;
+  max = e.clientY - startY;
+  if (
+    offsetX + max / 2 < 0 ||
+    offsetY + max  < 0 ||
+    offsetX + cropperWidth + max / 2 > canvasWidth ||
+    cropperWidth - max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth - max, offsetX + max / 2, offsetY + max);
+}
+function downMove(event) {
+  const e = event || window.event;
+  max = e.clientY - startY;
+  if (
+    offsetX + max / 2 < 0 ||
+    offsetY + cropperWidth + max > canvasHeight ||
+    offsetX + cropperWidth + max / 2 > canvasWidth ||
+    cropperWidth + max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth + max, offsetX - max / 2, offsetY);
+}
+function leftMove(event) {
+  const e = event || window.event;
+  max = e.clientX - startX;
+  if (
+    offsetX + max < 0 ||
+    offsetY + max / 2 < 0 ||
+    offsetY + cropperWidth - max / 2 > canvasHeight ||
+    cropperWidth - max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth - max, offsetX + max, offsetY + max / 2);
+}
+function rightMove(event) {
+  const e = event || window.event;
+  max = e.clientX - startX;
+  if (
+    offsetY - max / 2 < 0 ||
+    offsetX + cropperWidth + max > canvasWidth ||
+    offsetY + cropperWidth + max / 2 > canvasHeight ||
+    cropperWidth + max < minDimension
+  ) return;
+  cropperCSSsetup(cropperWidth + max, offsetX, offsetY - max / 2);
 }
 
-// Event registration
-selector.on('mousedown', function(event) {
-  dragMode = 0;
-  onDragStart(event);
-});
-selector.find('.tl-resizer').on('mousedown', function(event) {
-  dragMode = 1;
-  onDragStart(event);
-});
-selector.find('.tr-resizer').on('mousedown', function(event) {
-  dragMode = 2;
-  onDragStart(event);
-});
-selector.find('.bl-resizer').on('mousedown', function(event) {
-  dragMode = 3;
-  onDragStart(event);
-});
-selector.find('.br-resizer').on('mousedown', function(event) {
-  dragMode = 4;
-  onDragStart(event);
-});
+function getBase64ImageSize(base64) {
+  return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({
+          img,
+      });
+      img.onerror = reject;
+      img.src = base64;
+  });
+}
 
-pickfile.click(function(event) {
-  var picker = $('<input type="file"/>');
-  picker.change(function(event) {
+pickfile.onclick = (event) => {
+  let picker = document.createElement('input');
+  picker.type = 'file';
+  picker.accept = inputAcceptFlieType;
+  picker.onchange = (event) => {
     var file = event.target.files[0];
+    console.log(file);
+    if (!FileType.includes(file.type)) {
+      OOerrorMsg.toggle(true);
+      OOerrorMsg.setLabel(mw.msg('avatar-invalid'));
+      return;
+    }
+
     if (file) {
       var reader = new FileReader();
-      reader.onloadend = function() {
-        imageObj.width('auto').height('auto');
-        imageObj.attr('src', reader.result);
-      }
+        reader.onloadend = () => {
+          currentAvatar.style.display = 'none';
+          canvas.style.display = 'block';
+          OOSubmit.setDisabled("");
+          msgBelow.textContent = mw.msg('uploadavatar-hint');
+          OOerrorMsg.toggle(false)
+          InitCanvas(reader.result);
+        }
       reader.readAsDataURL(file);
     }
-  });
+  }
   picker.click();
   event.preventDefault();
-});
+}
 
-imageObj
-  .on('load', onImageLoaded)
-  .on('error', onImageLoadingFailed);
+const InitCanvas = async (base64) => {
+  try {
+    const sizs = await getBase64ImageSize(base64);
+    CorpBoxClass.init(sizs.img);
+    const inputValue = CorpBoxClass.clip(offsetX, offsetY, cropperWidth, cropperWidth);
+    hiddenField.setAttribute('value', inputValue);
+  } catch (e) {
+    OOerrorMsg.toggle(true);
+    OOerrorMsg.setLabel(e.message);
+  }
+}
 
-
-// UI modification
-submitButton.attr('disabled', '');
-container.append(imageObj);
-container.append(selector);
 hiddenField.before(currentAvatar);
-hiddenField.before(container);
-hiddenField.before(msgBelow);
+pickfile.before(msgBelow);

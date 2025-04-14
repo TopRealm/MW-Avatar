@@ -1,5 +1,5 @@
 {
-	"avatar_desc": "This extension provides an avatar system that can be used for other extensions",
+	"avatar_desc": "This extension provides an avatar system that can be used for other extensions. 2.0.0 and later is modified by YouShou Archives Contributors.",
 	"uploadavatar": "Upload Avatar",
 	"uploadavatar-submit": "Upload Avatar",
 	"uploadavatar-selectfile": "Select File",

@@ -1,16 +1,22 @@
 <?php
 namespace Avatar;
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use OOUI;
 
 class SpecialUpload extends \SpecialPage {
 
 	public function __construct() {
+
 		parent::__construct('UploadAvatar');
 	}
 
 	public function execute($par) {
 		$this->requireLogin('prefsnologintext2');
+
+		OOUI\Theme::setSingleton(new OOUI\WikimediaUITheme);
+		OOUI\Element::setDefaultDir('rtl');
 
 		$this->setHeaders();
 		$this->outputHeader();
@@ -27,10 +33,6 @@ class SpecialUpload extends \SpecialPage {
 		global $wgMaxAvatarResolution;
 		$this->getOutput()->addJsConfigVars('wgMaxAvatarResolution', $wgMaxAvatarResolution);
 		$this->getOutput()->addModules('ext.avatar.upload');
-		
-		// 加载OOUI模块以确保OOUI样式生效
-		$this->getOutput()->addModules(['oojs-ui-core', 'oojs-ui-widgets']);
-		$this->getOutput()->enableOOUI(); // 启用OOUI支持
 
 		if ($request->wasPosted()) {
 			if ($this->processUpload()) {
@@ -42,8 +44,24 @@ class SpecialUpload extends \SpecialPage {
 		$this->displayForm();
 	}
 
-	private function displayMessage($msg) {
-		$this->getOutput()->addHTML(\Html::rawElement('div', array('class' => 'error', 'id' => 'errorMsg'), $msg));
+	private function displayMessage($msg) { 
+		// if (!$msg) return;
+		$infoBox = new OOUI\MessageWidget(
+			[
+				'type' => 'error',
+				'infusable' => true,
+				'id' => 'errorMsg',
+				'label' => $msg,
+				'data' => [
+					'data-ooui' => json_encode([
+						'type' => 'error',
+						'label' => $msg
+					])
+				]
+			]
+		);
+		// $infoBox -> toggle($msg ? true : false);
+		$this->getOutput()->addHTML($infoBox);
 	}
 
 	private function processUpload() {
@@ -117,53 +135,54 @@ class SpecialUpload extends \SpecialPage {
 	}
 
 	public function displayForm() {
-		$html = '<p></p>';
-		
-		// 创建表单面板
-		$formPanel = new \OOUI\PanelLayout([
-			'padded' => true,
-			'framed' => false
+
+		$inputAvatar = Html::hidden('avatar', '', ['id' => 'avatar']);
+		$customWidget = new OOUI\Widget([
+			'content' => [
+				new OOUI\HtmlSnippet('<p id="avatar-error"></p>'),
+				new OOUI\HtmlSnippet($inputAvatar),
+				new OOUI\HtmlSnippet('<div id="crop"></div>')
+			]
 		]);
-		
-		// 创建表单布局
-		$formLayout = new \OOUI\FormLayout([
-			'method' => 'post',
-			'action' => $this->getPageTitle()->getLinkURL()
-		]);
-		
-		// 创建字段集
-		$fieldset = new \OOUI\FieldsetLayout();
-		
-		// 创建隐藏字段
-		$hiddenField = new \OOUI\HiddenInputWidget([
-			'name' => 'avatar'
-		]);
-		
-		// 创建按钮组
-		$buttonGroup = new \OOUI\HorizontalLayout();
-		
-		// 文件选择按钮 (注意：需要保留id="pickfile"以便JavaScript能找到它)
-		$pickfileButton = new \OOUI\ButtonWidget([
-			'id' => 'pickfile',
+
+		$pickfile = new OOUI\ButtonWidget([
 			'label' => $this->msg('uploadavatar-selectfile')->text(),
-			'framed' => true
+			'id' => 'pickfile',
 		]);
-		
-		// 提交按钮
-		$submitButton = new \OOUI\ButtonInputWidget([
-			'type' => 'submit',
+
+		$submit = new OOUI\ButtonInputWidget([
 			'label' => $this->msg('uploadavatar-submit')->text(),
-			'flags' => ['primary', 'progressive']
+			'type' => 'submit',
+			'id' => 'submit',
+			'disabled' => 'disabled',
+			'useInputTag' => true,
+			'infusable' => true,
+			'flags' => [
+				'primary',
+				'progressive'
+			],
+			'data' => [
+				'data-ooui' => json_encode([
+					'type' => 'submit',
+					'label' => $this->msg('uploadavatar-submit')->text()
+				])
+			]
 		]);
-		
-		// 组装界面
-		$buttonGroup->addItems([$pickfileButton, new \OOUI\SpacerWidget(['classes' => ['spacer']]), $submitButton]);
-		$fieldset->addItems([$hiddenField, $buttonGroup]);
-		$formLayout->addItems([$fieldset]);
-		$formPanel->appendContent($formLayout);
-		
+
+		$as = new OOUI\FormLayout([
+			'id' => 'avatar-form',
+			'method' => 'post',
+			'action' => $this->getPageTitle()->getLinkURL(),
+			'classes' => ['avatar-form'],
+			'items' => [
+				$customWidget,
+				$pickfile,
+				$submit,
+			]
+		]);
 		$this->getOutput()->addWikiMsg('uploadavatar-notice');
-		$this->getOutput()->addHTML($formPanel);
+		$this->getOutput()->addHTML($as);
+
 	}
 
 	public function isListed() {

@@ -1,3 +1,6 @@
-var img = $('<img>').attr('src', mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + mw.user.id());
-var link = $('<a>').attr('href', mw.util.getUrl('Special:UploadAvatar')).append(img);
-$('#pt-userpage').before($('<li id="pt-avatar"></li>').append(link));
+const img = document.createElement('img');
+img.src = mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + mw.user.id();
+const link = document.createElement('a');
+link.href = mw.util.getUrl('Special:UploadAvatar');
+link.appendChild(img);
+document.getElementById('pt-userpage').before(document.createElement('li').appendChild(link));
