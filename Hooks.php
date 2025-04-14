@@ -1,13 +1,12 @@
 <?php
 namespace Avatar;
 
-use OOUI\ButtonWidget;
+use OOUI;
 
 class Hooks {
 
 	public static function onGetPreferences(\User $user, &$preferences) {
-
-		$link = new ButtonWidget([
+		$link = new OOUI\ButtonWidget([
 			'label' => wfMessage('uploadavatar')->text(),
 			'href' => \SpecialPage::getTitleFor("UploadAvatar")->getLinkURL(),
 		]);

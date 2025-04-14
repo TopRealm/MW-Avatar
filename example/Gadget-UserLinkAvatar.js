@@ -1,4 +1,4 @@
-$('.mw-userlink').each(function(_, item) {
-	item = $(item);
-	item.prepend($('<img/>').addClass('userlink-avatar').attr('src', mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + item.text()));
-});
+const mw_userlink = document.querySelectorAll('.mw-userlink');
+for (let i of mw_userlink) {
+	i.innerHTML = '<img class="userlink-avatar" src="' + mw.config.get('wgScriptPath') + '/extensions/Avatar/avatar.php?user=' + i.textContent + '">' + i.innerHTML;
+}

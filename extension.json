@@ -1,9 +1,12 @@
 {
 	"name": "Avatar",
-	"author": "Gary Guo",
-	"url": "https://github.com/nbdd0121/MW-Avatar",
+	"author": [
+		"Gary Guo",
+		"[https://github.com/ajdgg awajie]"
+	],
+	"url": "https://github.com/TopRealm/MW-Avatar",
 	"descriptionmsg": "avatar_desc",
-	"version": "1.2.0",
+	"version": "2.0.0",
 	"license-name": "BSD-2-Clause",
 	"type": "specialpage",
 	"ExtensionMessagesFiles": {
@@ -25,8 +28,8 @@
 	"ResourceModules": {
 		"ext.avatar.upload": {
 			"dependencies": [
-				"mediawiki.user",
-				"oojs-ui-core"
+				"oojs-ui-core",
+				"ext.avatar.canvas"
 			],
 			"scripts":[
 				"assets/upload.js"
@@ -40,7 +43,10 @@
 				"uploadavatar-nofile",
 				"uploadavatar-hint"
 			]
-		}
+		},
+		"ext.avatar.canvas": {
+            "scripts": ["assets/canvas.js"]
+        }
 	},
 	"AutoloadClasses": {
 		"Avatar\\Hooks": "Hooks.php",

@@ -1,7 +1,17 @@
-# Avatar 1.2.0
-Yet another avatar architecture for MediaWiki
+# Avatar
 
-**Note.** There are API changes when upgrading 0.9.2 to 1.0.0. The change is very likely to break your site. See section below for details.
+本拓展是基于[MediaWiki:Avatar](https://www.mediawiki.org/wiki/Extension:Avatar) ([MW-Avatar](https://github.com/nbdd0121/MW-Avatar))的修改版，使用OOUI重构部分代码
+
+This extension is a modified version of [MediaWiki:Avatar](https://www.mediawiki.org/wiki/Extension:Avatar) ([MW-Avatar](https://github.com/nbdd0121/MW-Avatar)) and refactoring parts of the code using OOUI
+
+配置完全兼容 Avatar
+
+The configuration is fully compatible with Avatar
+
+
+<!-- Yet another avatar architecture for MediaWiki
+
+**Note.** There are API changes when upgrading 0.9.2 to 1.0.0. The change is very likely to break your site. See section below for details. -->
 
 ## Install
 * Install php-gd, which is a dependency of this extension

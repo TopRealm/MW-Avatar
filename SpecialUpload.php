@@ -1,24 +1,22 @@
 <?php
 namespace Avatar;
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use OOUI\ButtonWidget;
-use OOUI\ButtonInputWidget;
-use OOUI\Theme;
-use OOUI\WikimediaUITheme;
-use OOUI\Element;
+use OOUI;
 
 class SpecialUpload extends \SpecialPage {
 
 	public function __construct() {
+
 		parent::__construct('UploadAvatar');
 	}
 
 	public function execute($par) {
 		$this->requireLogin('prefsnologintext2');
 
-		Theme::setSingleton(new WikimediaUITheme);
-		Element::setDefaultDir('rtl');
+		OOUI\Theme::setSingleton(new OOUI\WikimediaUITheme);
+		OOUI\Element::setDefaultDir('rtl');
 
 		$this->setHeaders();
 		$this->outputHeader();
@@ -46,8 +44,24 @@ class SpecialUpload extends \SpecialPage {
 		$this->displayForm();
 	}
 
-	private function displayMessage($msg) {
-		$this->getOutput()->addHTML(\Html::rawElement('div', array('class' => 'error', 'id' => 'errorMsg'), $msg));
+	private function displayMessage($msg) { 
+		// if (!$msg) return;
+		$infoBox = new OOUI\MessageWidget(
+			[
+				'type' => 'error',
+				'infusable' => true,
+				'id' => 'errorMsg',
+				'label' => $msg,
+				'data' => [
+					'data-ooui' => json_encode([
+						'type' => 'error',
+						'label' => $msg
+					])
+				]
+			]
+		);
+		// $infoBox -> toggle($msg ? true : false);
+		$this->getOutput()->addHTML($infoBox);
 	}
 
 	private function processUpload() {
@@ -121,30 +135,52 @@ class SpecialUpload extends \SpecialPage {
 	}
 
 	public function displayForm() {
-		$html = '<p></p>';
-		$html .= \Html::hidden('avatar', '');
-
-		$html .= new ButtonWidget([
-			'label' => $this->msg('uploadavatar-selectfile')->text(),
-			'id' => 'pickfile',
-			'flags' => [
-				'primary',
-				'progressive'
+		$inputAvatar = Html::hidden('avatar', '', ['id' => 'avatar']);
+		$customWidget = new OOUI\Widget([
+			'content' => [
+				new OOUI\HtmlSnippet('<p id="avatar-error"></p>'),
+				new OOUI\HtmlSnippet($inputAvatar),
+				new OOUI\HtmlSnippet('<div id="crop"></div>')
 			]
 		]);
 
-		// Submit button
-		$html .= new ButtonInputWidget([
-			'label' => $this->msg('uploadavatar-submit')->text(),
-			'type' => 'submit',
-			'useInputTag' => true,
+		$pickfile = new OOUI\ButtonWidget([
+			'label' => $this->msg('uploadavatar-selectfile')->text(),
+			'id' => 'pickfile',
 		]);
 
-		// Wrap with a form
-		$html = \Xml::tags('form', array('action' => $this->getPageTitle()->getLinkURL(), 'method' => 'post'), $html);
+		$submit = new OOUI\ButtonInputWidget([
+			'label' => $this->msg('uploadavatar-submit')->text(),
+			'type' => 'submit',
+			'id' => 'submit',
+			'disabled' => 'disabled',
+			'useInputTag' => true,
+			'infusable' => true,
+			'flags' => [
+				'primary',
+				'progressive'
+			],
+			'data' => [
+				'data-ooui' => json_encode([
+					'type' => 'submit',
+					'label' => $this->msg('uploadavatar-submit')->text()
+				])
+			]
+		]);
 
+		$as = new OOUI\FormLayout([
+			'id' => 'avatar-form',
+			'method' => 'post',
+			'action' => $this->getPageTitle()->getLinkURL(),
+			'classes' => ['avatar-form'],
+			'items' => [
+				$customWidget,
+				$pickfile,
+				$submit,
+			]
+		]);
 		$this->getOutput()->addWikiMsg('uploadavatar-notice');
-		$this->getOutput()->addHTML($html);
+		$this->getOutput()->addHTML($as);
 	}
 
 	public function isListed() {
