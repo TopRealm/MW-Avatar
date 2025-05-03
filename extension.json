@@ -1,5 +1,5 @@
 {
-	"name": "Avatar",
+	"name": "OOUI-Avatar",
 	"author": [
 		"Gary Guo",
 		"[https://github.com/ajdgg awajie]"
@@ -55,7 +55,8 @@
 		"Avatar\\Thumbnail": "Thumbnail.php",
 		"Avatar\\SpecialUpload": "SpecialUpload.php",
 		"Avatar\\SpecialView": "SpecialView.php",
-		"Avatar\\AvatarHooks": "includes/Hooks/AvatarHooks.php"
+		"Avatar\\AvatarHooks": "includes/Hooks/AvatarHooks.php",
+		"Avatar\\OSSdispose": "includes/OSSdispose.php"
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "",
