@@ -122,7 +122,6 @@ class SpecialView extends \SpecialPage {
 			'name' => 'user',
 			'id' => 'user',
 			'value' => $user,
-			'placeholder' => $this->msg('viewavatar-username')->text(),
 		]),new OOUI\ButtonInputWidget([
 			'label' => $this->msg('viewavatar-submit')->text(),
 			'type' => 'submit',
