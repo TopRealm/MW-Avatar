@@ -118,26 +118,41 @@ class SpecialView extends \SpecialPage {
 
 		$html .= Html::element('legend', ['style' => 'font-size: 1rem'], $this->msg('viewavatar-legend')->text());
 
-		$userNameBtn = new OOUI\ActionFieldLayout( new OOUI\TextInputWidget([
+		// 创建用户输入框，添加用户建议功能
+		$userInput = new OOUI\TextInputWidget([
 			'name' => 'user',
 			'id' => 'user',
 			'value' => $user,
-		]),new OOUI\ButtonInputWidget([
+			'classes' => ['mw-autocomplete-user'],
+			'infusable' => true,
+		]);
+
+		// 创建提交按钮，设置为蓝色并另起一行
+		$submitButton = new OOUI\ButtonInputWidget([
 			'label' => $this->msg('viewavatar-submit')->text(),
 			'type' => 'submit',
 			'id' => 'submit',
-		]), [
-			'classes' => [ 'avatar-flex-auto', 'avatar-max-width-50em' ]
+			'flags' => ['primary', 'progressive'],
+			'classes' => ['avatar-submit-button'],
 		]);
 
-		$html .= new OOUI\HorizontalLayout([
-			'content' => [
-				new OOUI\HtmlSnippet(Html::element('div', ['style' => 'margin: auto 0;'], $this->msg('viewavatar-username')->text())),
-				$userNameBtn
-			]
+		// 创建垂直布局
+		$verticalLayout = new OOUI\VerticalLayout([
+			'items' => [
+				new OOUI\HorizontalLayout([
+					'content' => [
+						new OOUI\HtmlSnippet(Html::element('div', ['style' => 'margin: auto 0;'], $this->msg('viewavatar-username')->text())),
+						$userInput
+					]
+				]),
+				$submitButton
+			],
+			'classes' => ['avatar-form-container']
 		]);
 
-		// // Fieldset
+		$html .= $verticalLayout;
+
+		// Fieldset
 		$fieldset = Html::rawElement('fieldset', [
 			'class' => 'mw-fieldset'
 		], $html);
@@ -146,7 +161,7 @@ class SpecialView extends \SpecialPage {
 				new OOUI\HtmlSnippet($fieldset),
 			]
 		]);
-		// // Wrap with a form
+		// Wrap with a form
 		$showForm = new OOUI\FormLayout([
 			'action' => $wgScript,
 			'method' => 'get',
