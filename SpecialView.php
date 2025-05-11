@@ -121,14 +121,15 @@ class SpecialView extends \SpecialPage {
 		$userNameBtn = new OOUI\ActionFieldLayout( new OOUI\TextInputWidget([
 			'name' => 'user',
 			'id' => 'user',
+			'class' => 'mw-user-suggest',
+			'required' => true,
 			'value' => $user,
 		]),new OOUI\ButtonInputWidget([
 			'label' => $this->msg('viewavatar-submit')->text(),
-			'required' => true,
 			'type' => 'submit',
 			'id' => 'submit',
 		]), [
-			'classes' => [ 'avatar-flex-auto', 'avatar-max-width-50em', 'mw-autocomplete-user' ]
+			'classes' => [ 'avatar-flex-auto', 'avatar-max-width-50em' ]
 		]);
 
 		$html .= new OOUI\HorizontalLayout([
