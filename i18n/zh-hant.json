@@ -6,7 +6,7 @@
 			"Nbdd0121"
 		]
 	},
-	"avatar_desc": "這個擴充套件提供了可用於其他擴充套件的頭像系統。2.0.0及更高版本由有獸檔案館貢獻者修改。",
+	"avatar_desc": "這個擴充套件提供可供其他擴充套件使用的頭像系統。2.0.0及以後版本由有獸檔案館貢獻者修改，並加入使用AWS儲存頭像的額外支援。",
 	"uploadavatar": "上傳頭像",
 	"uploadavatar-submit": "上傳頭像",
 	"uploadavatar-selectfile": "選擇檔案",
@@ -42,5 +42,8 @@
 	"viewavatar-noavatar": "* 該使用者沒有頭像。",
 	"viewavatar-nouser": "* 該使用者不存在。",
 
-	"sidebar-viewavatar": "檢視頭像"
+	"sidebar-viewavatar": "檢視頭像",
+
+	"oss-bucket-not-configured": "未設定OSS儲存桶。",
+	"oss-Invalid-init-param": "未設定的初始化參數："
 }

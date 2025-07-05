@@ -1,5 +1,8 @@
 {
-	"avatar_desc": "This extension provides an avatar system that can be used for other extensions. 2.0.0 and later is modified by YouShou Archives Contributors.",
+	"@metadata": {
+		"authors": []
+	},
+	"avatar_desc": "This extension provides an avatar system that can be used by other extensions. Version 2.0.0 and later is modified by YouShou Archives Contributors, with additional support for storing avatars using AWS.",
 	"uploadavatar": "Upload Avatar",
 	"uploadavatar-submit": "Upload Avatar",
 	"uploadavatar-selectfile": "Select File",
@@ -35,5 +38,8 @@
 	"viewavatar-noavatar": "* This user does not have an avatar.",
 	"viewavatar-nouser": "* No such user.",
 
-	"sidebar-viewavatar": "View Avatar"
+	"sidebar-viewavatar": "View Avatar",
+
+	"oss-bucket-not-configured": "OSS bucket not configured.",
+	"oss-Invalid-init-param": "Unconfigured initialization parameters: "
 }

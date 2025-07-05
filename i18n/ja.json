@@ -1,5 +1,8 @@
 {
-	"avatar_desc": "この拡張機能は、他の拡張機能のために使用することができるアバターシステムを提供します。2.0.0以降は、YouShou Archives Contributorsによって変更されています。",
+	"@metadata": {
+		"authors": []
+	},
+	"avatar_desc": "この拡張機能は、他の拡張機能で使用できるアバターシステムを提供します。2.0.0以降はYouShou Archives Contributorsによって変更され、AWSストレージを利用したアバター保存の追加サポートが含まれています。",
 	"uploadavatar": "アバターをアップロード",
 	"uploadavatar-submit": "アバターをアップロード",
 	"uploadavatar-selectfile": "ファイルを選択",
@@ -35,5 +38,8 @@
 	"viewavatar-noavatar": "* この利用者はアバターがいません。",
 	"viewavatar-nouser": "* この名前の利用者は存在しません。",
 
-	"sidebar-viewavatar": "アバターを検査"
+	"sidebar-viewavatar": "アバターを検査",
+
+	"oss-bucket-not-configured": "OSSバケットが設定されていません。",
+	"oss-Invalid-init-param": "未設定の初期化パラメータ："
 }
