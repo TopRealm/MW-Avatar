@@ -81,7 +81,6 @@ class SpecialView extends \SpecialPage {
 			}
 		}
 
-		$this->getOutput()->addModules(array('mediawiki.userSuggest'));
 		$this->getOutput()->addModules('ext.avatar.view');
 		$this->showForm($user);
 
@@ -118,11 +117,10 @@ class SpecialView extends \SpecialPage {
 
 		$html .= Html::element('legend', ['style' => 'font-size: 1rem'], $this->msg('viewavatar-legend')->text());
 
-		// Create username input with user suggestion support
+		// Create username input
 		$userNameInput = new OOUI\TextInputWidget([
 			'name' => 'user',
 			'id' => 'user',
-			'classes' => ['mw-user-suggest'],
 			'required' => true,
 			'value' => $user,
 			'placeholder' => $this->msg('viewavatar-username-placeholder')->text(),
