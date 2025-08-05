@@ -64,10 +64,16 @@
 
     function selectSuggestion(username) {
         if (currentInput) {
-            currentInput.value = username;
-            // 触发input事件以确保OOUI组件更新
-            var event = new Event('input', { bubbles: true });
-            currentInput.dispatchEvent(event);
+            // 对于OOUI组件，需要通过其widget来设置值
+            var widget = OO.ui.infuse(currentInput.closest('.oo-ui-widget'));
+            if (widget && widget.setValue) {
+                widget.setValue(username);
+            } else {
+                currentInput.value = username;
+                // 触发input事件以确保组件更新
+                var event = new Event('input', { bubbles: true });
+                currentInput.dispatchEvent(event);
+            }
         }
         hideSuggestions();
     }
@@ -125,9 +131,18 @@
     }
 
     function initUserSuggest() {
-        // 查找用户名输入框
-        var userInput = document.getElementById('user');
+        // 查找用户名输入框 - 需要找到OOUI渲染的实际input元素
+        var userInputWidget = document.querySelector('#user');
+        var userInput = null;
+        
+        if (userInputWidget) {
+            // 对于OOUI TextInputWidget，实际的input元素在其内部
+            userInput = userInputWidget.querySelector('input') || userInputWidget;
+        }
+        
         if (!userInput) {
+            // 如果没找到，稍后重试
+            setTimeout(initUserSuggest, 500);
             return;
         }
 
@@ -191,19 +206,58 @@
         });
     }
 
+    function initFormValidation() {
+        // 为删除表单添加验证
+        var deleteForms = document.querySelectorAll('form');
+        deleteForms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                var reasonInput = form.querySelector('input[name="reason"]');
+                var deleteInput = form.querySelector('input[name="delete"]');
+                
+                // 只对删除表单进行验证
+                if (deleteInput && deleteInput.value === 'true' && reasonInput) {
+                    var reason = reasonInput.value.trim();
+                    if (!reason) {
+                        e.preventDefault();
+                        alert('请输入删除理由');
+                        reasonInput.focus();
+                        return false;
+                    }
+                }
+            });
+        });
+    }
+
     // 页面加载完成后初始化
     mw.hook('wikipage.content').add(function() {
         // 等待OOUI组件渲染完成
-        setTimeout(initUserSuggest, 100);
+        setTimeout(function() {
+            initUserSuggest();
+            initFormValidation();
+        }, 200);
     });
 
     // 如果页面已经加载完成，直接初始化
     if (document.readyState === 'complete') {
-        setTimeout(initUserSuggest, 100);
+        setTimeout(function() {
+            initUserSuggest();
+            initFormValidation();
+        }, 200);
     } else {
         window.addEventListener('load', function() {
-            setTimeout(initUserSuggest, 100);
+            setTimeout(function() {
+                initUserSuggest();
+                initFormValidation();
+            }, 200);
         });
     }
+
+    // 监听OOUI ready事件
+    mw.hook('ooui.ready').add(function() {
+        setTimeout(function() {
+            initUserSuggest();
+            initFormValidation();
+        }, 100);
+    });
 
 })();

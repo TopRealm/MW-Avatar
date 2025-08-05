@@ -122,10 +122,11 @@ class SpecialView extends \SpecialPage {
 		$userNameInput = new OOUI\TextInputWidget([
 			'name' => 'user',
 			'id' => 'user',
-			'class' => 'mw-user-suggest',
+			'classes' => ['mw-user-suggest'],
 			'required' => true,
 			'value' => $user,
-			'placeholder' => $this->msg('viewavatar-username')->text(),
+			'placeholder' => $this->msg('viewavatar-username-placeholder')->text(),
+			'autocomplete' => false,
 		]);
 
 		// Create submit button
@@ -189,7 +190,8 @@ class SpecialView extends \SpecialPage {
 		// Create reason input
 		$reasonInput = new OOUI\TextInputWidget([
 			'name' => 'reason',
-			'placeholder' => $this->msg('viewavatar-delete-reason')->text(),
+			'required' => true,
+			'placeholder' => $this->msg('viewavatar-delete-reason-placeholder')->text(),
 		]);
 
 		// Create delete button with red styling and trash icon
