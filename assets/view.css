@@ -15,22 +15,6 @@ by awajie
 	margin-top: 1em;
 }
 
-/* 删除按钮红色样式 */
-.avatar-delete-button {
-	background-color: #d73027 !important;
-	border-color: #d73027 !important;
-	color: white !important;
-}
-
-.avatar-delete-button:hover {
-	background-color: #a51e1e !important;
-	border-color: #a51e1e !important;
-}
-
-.avatar-delete-button:focus {
-	box-shadow: 0 0 0 1px #d73027 !important;
-}
-
 /* 用户建议下拉框样式 */
 .mw-user-suggest {
 	position: relative;

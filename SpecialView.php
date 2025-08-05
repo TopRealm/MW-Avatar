@@ -192,11 +192,12 @@ class SpecialView extends \SpecialPage {
 			'placeholder' => $this->msg('viewavatar-delete-reason')->text(),
 		]);
 
-		// Create delete button with red styling
+		// Create delete button with red styling and trash icon
 		$deleteBtn = new OOUI\ButtonInputWidget([
 			'label' => $this->msg('viewavatar-delete-submit')->text(),
 			'type' => 'submit',
-			'flags' => ['destructive'],
+			'icon' => 'trash',
+			'flags' => ['primary', 'destructive'],
 			'classes' => ['avatar-delete-button'],
 		]);
 
