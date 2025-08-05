@@ -9,3 +9,8 @@ by awajie
 .avatar-max-width-50em {
 	max-width: 50em;
 }
+
+/* 按钮字段样式 */
+.avatar-button-field {
+	margin-top: 1em;
+}

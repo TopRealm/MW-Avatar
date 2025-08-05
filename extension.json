@@ -47,7 +47,11 @@
 		},
 		"ext.avatar.view": {
 			"dependencies": [
-				"oojs-ui-core"
+				"oojs-ui-core",
+				"mediawiki.api"
+			],
+			"scripts": [
+				"assets/view.js"
 			],
 			"styles": [
 				"assets/view.css"
