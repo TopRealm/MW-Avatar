@@ -118,24 +118,40 @@ class SpecialView extends \SpecialPage {
 
 		$html .= Html::element('legend', ['style' => 'font-size: 1rem'], $this->msg('viewavatar-legend')->text());
 
-		$userNameBtn = new OOUI\ActionFieldLayout( new OOUI\TextInputWidget([
+		// Create username input with user suggestion support
+		$userNameInput = new OOUI\TextInputWidget([
 			'name' => 'user',
 			'id' => 'user',
 			'class' => 'mw-user-suggest',
 			'required' => true,
 			'value' => $user,
-		]),new OOUI\ButtonInputWidget([
+			'placeholder' => $this->msg('viewavatar-username')->text(),
+		]);
+
+		// Create submit button
+		$submitBtn = new OOUI\ButtonInputWidget([
 			'label' => $this->msg('viewavatar-submit')->text(),
 			'type' => 'submit',
 			'id' => 'submit',
-		]), [
-			'classes' => [ 'avatar-flex-auto', 'avatar-max-width-50em' ]
+			'flags' => ['primary', 'progressive'],
 		]);
 
-		$html .= new OOUI\HorizontalLayout([
+		// Create layout with input field on one line and button on the next
+		$userNameField = new OOUI\FieldLayout($userNameInput, [
+			'label' => $this->msg('viewavatar-username')->text(),
+			'align' => 'top',
+			'classes' => ['avatar-max-width-50em']
+		]);
+
+		$buttonField = new OOUI\FieldLayout($submitBtn, [
+			'align' => 'top',
+			'classes' => ['avatar-button-field']
+		]);
+
+		$html .= new OOUI\Widget([
 			'content' => [
-				new OOUI\HtmlSnippet(Html::element('div', ['style' => 'margin: auto 0;'], $this->msg('viewavatar-username')->text())),
-				$userNameBtn
+				$userNameField,
+				$buttonField
 			]
 		]);
 
@@ -170,20 +186,36 @@ class SpecialView extends \SpecialPage {
 
 		$html .= Html::element('legend', ['style' => 'font-size: 1rem'], $this->msg('viewavatar-delete-legend')->text());
 
-		$userNameBtn = new OOUI\ActionFieldLayout( new OOUI\TextInputWidget([
+		// Create reason input
+		$reasonInput = new OOUI\TextInputWidget([
 			'name' => 'reason',
-			// 'placeholder' => $this->msg('viewavatar-username')->text(),
-		]),new OOUI\ButtonInputWidget([
-			'label' => $this->msg('viewavatar-delete-submit')->text(),
-			'type' => 'submit',
-		]), [
-			'classes' => [ 'avatar-flex-auto', 'avatar-max-width-50em' ]
+			'placeholder' => $this->msg('viewavatar-delete-reason')->text(),
 		]);
 
-		$html .= new OOUI\HorizontalLayout([
+		// Create delete button with red styling
+		$deleteBtn = new OOUI\ButtonInputWidget([
+			'label' => $this->msg('viewavatar-delete-submit')->text(),
+			'type' => 'submit',
+			'flags' => ['destructive'],
+			'classes' => ['avatar-delete-button'],
+		]);
+
+		// Create layout with input field on one line and button on the next
+		$reasonField = new OOUI\FieldLayout($reasonInput, [
+			'label' => $this->msg('viewavatar-delete-reason')->text(),
+			'align' => 'top',
+			'classes' => ['avatar-max-width-50em']
+		]);
+
+		$buttonField = new OOUI\FieldLayout($deleteBtn, [
+			'align' => 'top',
+			'classes' => ['avatar-button-field']
+		]);
+
+		$html .= new OOUI\Widget([
 			'content' => [
-				new OOUI\HtmlSnippet(Html::element('div', ['style' => 'margin: auto 0;'], $this->msg('viewavatar-delete-reason')->text())),
-				$userNameBtn
+				$reasonField,
+				$buttonField
 			]
 		]);
 

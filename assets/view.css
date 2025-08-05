@@ -9,3 +9,58 @@ by awajie
 .avatar-max-width-50em {
 	max-width: 50em;
 }
+
+/* 按钮字段样式 */
+.avatar-button-field {
+	margin-top: 1em;
+}
+
+/* 删除按钮红色样式 */
+.avatar-delete-button {
+	background-color: #d73027 !important;
+	border-color: #d73027 !important;
+	color: white !important;
+}
+
+.avatar-delete-button:hover {
+	background-color: #a51e1e !important;
+	border-color: #a51e1e !important;
+}
+
+.avatar-delete-button:focus {
+	box-shadow: 0 0 0 1px #d73027 !important;
+}
+
+/* 用户建议下拉框样式 */
+.mw-user-suggest {
+	position: relative;
+}
+
+.suggestions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: white;
+	border: 1px solid #a2a9b1;
+	border-top: none;
+	max-height: 200px;
+	overflow-y: auto;
+	z-index: 1000;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.suggestions .suggestion {
+	padding: 8px 12px;
+	cursor: pointer;
+	border-bottom: 1px solid #eaecf0;
+}
+
+.suggestions .suggestion:hover,
+.suggestions .suggestion.selected {
+	background-color: #eaecf0;
+}
+
+.suggestions .suggestion:last-child {
+	border-bottom: none;
+}
