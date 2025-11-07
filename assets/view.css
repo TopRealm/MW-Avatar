@@ -74,6 +74,11 @@
     border-radius: 0 .5rem .5rem 0;
     border: 1px solid #ccc;
     white-space: nowrap;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .search-icon {
@@ -139,6 +144,10 @@
     border-radius: 5px;
 }
 
+.shut-down-delete-popup-btn {
+	background-color: var(--background-color-interactive-subtle, #f8f9fa);
+    color: var(--color-base, #202122);
+}
 
 @media (max-width: 480px) {
     .query-avatar-area {

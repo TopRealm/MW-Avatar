@@ -163,6 +163,13 @@
 	padding: 5px 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-color: var(--background-color-interactive-subtle, #f8f9fa);
+    color: var(--color-base, #202122);
 }
 
 #avatar-preview {
