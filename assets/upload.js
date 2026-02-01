@@ -2,6 +2,7 @@
 const CropBox = require("ext.avatar.canvas");
 
 const init = (Toolset) => {
+    'use strict';
     const minDimension = 64;
     const maxRes = mw.config.get('wgMaxAvatarResolution');
     const FileType = ['image/png', 'image/gif', 'image/jpeg', 'image/webp', 'image/svg+xml']
@@ -167,7 +168,7 @@ const init = (Toolset) => {
 
     function tlResizerMove(event) {
         const e = event || window.event;
-        max = Math.max(e.clientX - startX, e.clientY - startY);
+        const max = Math.max(e.clientX - startX, e.clientY - startY);
         if (
             offsetX + max < 0 ||
             offsetY + max < 0 ||
@@ -177,7 +178,7 @@ const init = (Toolset) => {
     }
     function trResizerMove(event) {
         const e = event || window.event;
-        max = Math.min(e.clientX - startX, - (e.clientY - startY));
+        const max = Math.min(e.clientX - startX, - (e.clientY - startY));
         if (
             offsetX + cropperWidth + max > canvasWidth ||
             offsetY - max < 0 ||
@@ -187,7 +188,7 @@ const init = (Toolset) => {
     }
     function blResizerMove(event) {
         const e = event || window.event;
-        max = Math.max(e.clientX - startX, - (e.clientY - startY));
+        const max = Math.max(e.clientX - startX, - (e.clientY - startY));
         if (
             offsetX + max < 0 ||
             offsetY + cropperWidth + max > canvasHeight ||
@@ -197,7 +198,7 @@ const init = (Toolset) => {
     }
     function brResizerMove(event) {
         const e = event || window.event;
-        max = Math.max(e.clientX - startX, e.clientY - startY);
+        const max = Math.max(e.clientX - startX, e.clientY - startY);
         if (
             offsetX + cropperWidth + max > canvasWidth ||
             offsetY + cropperWidth + max > canvasHeight ||
@@ -207,7 +208,7 @@ const init = (Toolset) => {
     }
     function upMove(event) {
         const e = event || window.event;
-        max = e.clientY - startY;
+        const max = e.clientY - startY;
         if (
             offsetX + max / 2 < 0 ||
             offsetY + max < 0 ||
@@ -218,7 +219,7 @@ const init = (Toolset) => {
     }
     function downMove(event) {
         const e = event || window.event;
-        max = e.clientY - startY;
+        const max = e.clientY - startY;
         if (
             offsetX + max / 2 < 0 ||
             offsetY + cropperWidth + max > canvasHeight ||
@@ -229,7 +230,7 @@ const init = (Toolset) => {
     }
     function leftMove(event) {
         const e = event || window.event;
-        max = e.clientX - startX;
+        const max = e.clientX - startX;
         if (
             offsetX + max < 0 ||
             offsetY + max / 2 < 0 ||
@@ -240,7 +241,7 @@ const init = (Toolset) => {
     }
     function rightMove(event) {
         const e = event || window.event;
-        max = e.clientX - startX;
+        const max = e.clientX - startX;
         if (
             offsetY - max / 2 < 0 ||
             offsetX + cropperWidth + max > canvasWidth ||
@@ -338,7 +339,8 @@ const init = (Toolset) => {
         avatarPresentationRegion.style.display = "flex";
         clippingArea.style.display = "none";
         currentAvatar.style.display = 'block';
-        fetch(window.location.pathname, {
+        const url = window.location.search === '' ? window.location.pathname : window.location.pathname + window.location.search;
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
